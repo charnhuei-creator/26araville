@@ -295,7 +295,7 @@
             transform: rotate(-45deg);
             background-color: var(--col-brown);
         }
-        .nav-overlay-backdrop {
+        .nav-backdrop {
             display: none;
         }
 
@@ -514,19 +514,40 @@
             .nav-toggle {
                 display: block;
             }
-            nav {
+            .nav-backdrop {
+                display: block;
                 position: fixed;
-                top: var(--header-height);
+                top: 0;
                 left: 0;
                 right: 0;
                 bottom: 0;
-                background-color: var(--col-white);
+                background-color: rgba(42, 30, 20, 0.45);
+                opacity: 0;
+                visibility: hidden;
+                transition: opacity 0.35s ease, visibility 0.35s ease;
+                z-index: 304;
+            }
+            .nav-backdrop.is-open {
+                opacity: 1;
+                visibility: visible;
+            }
+            nav {
+                position: fixed;
+                top: 0;
+                right: 0;
+                bottom: 0;
+                left: auto;
+                width: min(320px, 82vw);
+                background-color: var(--col-cream);
+                border-left: 1px solid rgba(98, 62, 42, 0.12);
+                box-shadow: -16px 0 40px rgba(42, 30, 20, 0.18);
                 flex-direction: column;
-                align-items: center;
+                align-items: flex-start;
                 justify-content: center;
-                gap: 2.25rem;
+                gap: 1.75rem;
+                padding: 6rem 2.5rem 3rem;
                 transform: translateX(100%);
-                transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+                transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
                 z-index: 305;
             }
             nav.is-open {
@@ -534,7 +555,7 @@
             }
             nav a {
                 font-size: 1.125rem;
-                padding: 0.75rem 0;
+                padding: 0.5rem 0;
             }
             header > .header-inner > .cta-button {
                 display: none;
@@ -670,6 +691,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="mainNav">
                 <span></span>
             </button>
+            <div class="nav-backdrop" id="navBackdrop"></div>
             <nav id="mainNav">
                 <a href="#concept">The Concept</a>
                 <a href="#lifestyle">Lifestyle</a>
@@ -785,19 +807,24 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         (function () {
             var toggle = document.getElementById('navToggle');
             var nav = document.getElementById('mainNav');
+            var backdrop = document.getElementById('navBackdrop');
             var body = document.body;
 
             function closeNav() {
                 nav.classList.remove('is-open');
+                backdrop.classList.remove('is-open');
                 toggle.setAttribute('aria-expanded', 'false');
                 body.classList.remove('nav-open');
             }
 
             toggle.addEventListener('click', function () {
                 var isOpen = nav.classList.toggle('is-open');
+                backdrop.classList.toggle('is-open', isOpen);
                 toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
                 body.classList.toggle('nav-open', isOpen);
             });
+
+            backdrop.addEventListener('click', closeNav);
 
             nav.querySelectorAll('a').forEach(function (link) {
                 link.addEventListener('click', function () {
